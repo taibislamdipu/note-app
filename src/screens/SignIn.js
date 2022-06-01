@@ -13,7 +13,7 @@ import { spacing } from "../theme/spacing";
 import { colors } from "../theme/colors";
 import Button from "../components/Button";
 
-export default function SignIn() {
+export default function SignIn({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Image
@@ -35,9 +35,13 @@ export default function SignIn() {
           title={"Login"}
           customStyle={{ alignSelf: "center", marginBottom: 60 }}
         />
-        <Pressable>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("SignUp");
+          }}
+        >
           <Text>
-            Don't have an account {""}
+            Don't have an account? {""}
             <Text style={{ color: colors.green, fontFamily: typography.bold }}>
               Sign up
             </Text>
@@ -65,9 +69,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[5],
   },
   bottomTextView: {
-    flex: 1,
-    justifyContent: "flex-end",
-    paddingBottom: 40,
+    // flex: 1,
+    // justifyContent: "flex-end",
+    // paddingBottom: 40,
     alignItems: "center",
+    marginTop: 200,
   },
 });
