@@ -7,18 +7,48 @@ import { colors } from "../theme/colors";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Text from "../components/Text/Text";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
 
 const genderOptions = ["Male", "Female"];
 
 export default function SignUp({ navigation }) {
   const [gender, setGender] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState("");
+
+  const signup = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("user", user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.textInputView}>
-        <Input placeholder="Email Address" />
-        <Input placeholder="Password" secureTextEntry />
-        <Input placeholder="Full name" />
-        <Input placeholder="Age" />
+        <Input
+          placeholder="Email Address"
+          onChangeText={(text) => setEmail(text)}
+        />
+        <Input
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={(text) => setPassword(text)}
+        />
+        <Input
+          placeholder="Full name"
+          onChangeText={(text) => setUsername(text)}
+        />
+        <Input placeholder="Age" onChangeText={(text) => setAge(text)} />
         <View style={{ marginVertical: 20 }}>
           <Text>Select Gender</Text>
         </View>
@@ -51,8 +81,9 @@ export default function SignUp({ navigation }) {
 
       <View style={styles.bottomTextView}>
         <Button
-          title={"Sign up"}
           customStyle={{ alignSelf: "center", marginBottom: 60 }}
+          title={"Sign up"}
+          onPress={signup}
         />
         <Pressable
           onPress={() => {
