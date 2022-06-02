@@ -33,7 +33,7 @@ export default function SignIn({ navigation }) {
       <View style={styles.bottomTextView}>
         <Button
           title={"Login"}
-          customStyle={{ alignSelf: "center", marginBottom: 60 }}
+          customStyles={{ alignSelf: "center", marginBottom: 60 }}
         />
         <Pressable
           onPress={() => {

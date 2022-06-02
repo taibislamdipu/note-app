@@ -4,13 +4,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { typography } from "../theme/typography";
 import { spacing } from "../theme/spacing";
 import { colors } from "../theme/colors";
-import Button from "../components/Button";
+// import Button from "../components/Button";
 import Input from "../components/Input";
 import Text from "../components/Text/Text";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import Button from "../components/Button";
 
 const auth = getAuth();
-
 const genderOptions = ["Male", "Female"];
 
 export default function SignUp({ navigation }) {
@@ -20,15 +20,18 @@ export default function SignUp({ navigation }) {
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
 
-  const signup = () => {
+  const signUpAction = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        // Signed in
         const user = userCredential.user;
-        console.log("user", user);
+        console.log("user created", user);
+        alert("User created");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        // ..
       });
   };
 
@@ -81,9 +84,9 @@ export default function SignUp({ navigation }) {
 
       <View style={styles.bottomTextView}>
         <Button
-          customStyle={{ alignSelf: "center", marginBottom: 60 }}
-          title={"Sign up"}
-          onPress={signup}
+          title={"Signup"}
+          onPress={signUpAction}
+          customStyles={{ alignSelf: "center", marginBottom: 60 }}
         />
         <Pressable
           onPress={() => {
@@ -91,7 +94,7 @@ export default function SignUp({ navigation }) {
           }}
         >
           <Text>
-            Already have an account? {""}
+            Already have an account?{" "}
             <Text style={{ color: colors.green, fontFamily: typography.bold }}>
               Login
             </Text>
