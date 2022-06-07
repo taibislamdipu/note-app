@@ -7,32 +7,48 @@ import { colors } from "../theme/colors";
 // import Button from "../components/Button";
 import Input from "../components/Input";
 import Text from "../components/Text/Text";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import Button from "../components/Button";
+import { auth, db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
+import { showMessage } from "react-native-flash-message";
 
-const auth = getAuth();
 const genderOptions = ["Male", "Female"];
 
 export default function SignUp({ navigation }) {
-  const [gender, setGender] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
+  const [gender, setGender] = useState(null);
 
-  const signUpAction = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log("user created", user);
-        alert("User created");
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
+  const signUpAction = async () => {
+    try {
+      // 1. create a new user with email and password
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // 2. add user profile to database
+      await addDoc(collection(db, "users"), {
+        username: username,
+        email: email,
+        age: age,
+        uid: result.user.uid,
       });
+      showMessage({
+        message: "Successful!",
+        type: "success",
+      });
+    } catch (error) {
+      console.log("error", error);
+
+      showMessage({
+        message: "FirebaseError: Firebase: Error (auth/email-already-in-use).",
+        type: "danger",
+      });
+    }
   };
 
   return (
@@ -122,9 +138,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[5],
   },
   bottomTextView: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "flex-end",
-    paddingBottom: 40,
+    marginTop: 100,
     alignItems: "center",
   },
   radioContainer: {

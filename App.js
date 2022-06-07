@@ -10,19 +10,7 @@ import Create from "./src/screens/Create";
 import Edit from "./src/screens/Edit";
 import SignIn from "./src/screens/SignIn";
 import SignUp from "./src/screens/SignUp";
-
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDP_XHHLQNg_18yRw5AgDd48-Sze8qrLDM",
-  authDomain: "note-app-native.firebaseapp.com",
-  projectId: "note-app-native",
-  storageBucket: "note-app-native.appspot.com",
-  messagingSenderId: "129430970588",
-  appId: "1:129430970588:web:ca900f9e5e3ab05c6f9419",
-};
-
-const app = initializeApp(firebaseConfig);
+import FlashMessage from "react-native-flash-message";
 
 const AppTheme = {
   ...DefaultTheme,
@@ -67,6 +55,12 @@ export default function App() {
           </>
         )}
       </Stack.Navigator>
+      <FlashMessage
+        position="top"
+        duration={2500}
+        hideOnPress={true}
+        statusBarHeight={50}
+      />
     </NavigationContainer>
   );
 }
