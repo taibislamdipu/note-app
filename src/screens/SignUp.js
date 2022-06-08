@@ -7,11 +7,18 @@ import { colors } from "../theme/colors";
 // import Button from "../components/Button";
 import Input from "../components/Input";
 import Text from "../components/Text/Text";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+
 import Button from "../components/Button";
-import { auth, db } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
 import { showMessage } from "react-native-flash-message";
+import { AntDesign } from "@expo/vector-icons";
+
+import { auth, db } from "../firebase";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
 const genderOptions = ["Male", "Female"];
 
@@ -53,6 +60,27 @@ export default function SignUp({ navigation }) {
         type: "danger",
       });
       setLoading(false);
+    }
+  };
+
+  const googleLogin = async () => {
+    try {
+      console.log("googleLogin");
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider)
+        .then((result) => {
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          const user = result.user;
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          const email = error.customData.email;
+          const credential = GoogleAuthProvider.credentialFromError(error);
+        });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -107,10 +135,17 @@ export default function SignUp({ navigation }) {
 
       <View style={styles.bottomTextView}>
         <Button
+          title={<AntDesign name="google" size={24} color="black" />}
+          onPress={googleLogin}
+          customStyles={{ alignSelf: "center", marginBottom: 20 }}
+        />
+
+        <Button
           title={"Signup"}
           onPress={signUpAction}
-          customStyles={{ alignSelf: "center", marginBottom: 60 }}
+          customStyles={{ alignSelf: "center", marginBottom: 20 }}
         />
+
         <Pressable
           onPress={() => {
             navigation.navigate("SignIn");
