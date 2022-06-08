@@ -3,13 +3,19 @@ import React from "react";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
 
-export default function Input({ placeholder, secureTextEntry, onChangeText }) {
+export default function Input({
+  placeholder,
+  secureTextEntry,
+  onChangeText,
+  autoCapitalize,
+}) {
   return (
     <TextInput
       style={styles.textInput}
       placeholder={placeholder}
       secureTextEntry={secureTextEntry}
       onChangeText={onChangeText}
+      autoCapitalize={autoCapitalize}
     />
   );
 }

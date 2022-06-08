@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { useFonts } from "expo-font";
 import { typography } from "./src/theme/typography";
 import Text from "./src/components/Text/Text";
@@ -12,7 +12,7 @@ import Edit from "./src/screens/Edit";
 import SignIn from "./src/screens/SignIn";
 import SignUp from "./src/screens/SignUp";
 import FlashMessage from "react-native-flash-message";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./src/firebase";
 
 const AppTheme = {
@@ -26,24 +26,39 @@ const AppTheme = {
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [user, setUser] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  // useEffect(() => {
+  //   signOut(auth);
+  // });
 
   useEffect(() => {
     const authSubscription = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
+        setLoading(false);
+      } else {
+        setUser(null);
+        setLoading(false);
       }
     });
+
+    return authSubscription;
   }, []);
 
-  const [loaded] = useFonts({
+  const myFonts = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
   });
 
-  if (!loaded) {
-    return <Text>Font is loading...</Text>;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignSelf: "center" }}>
+        <ActivityIndicator color="blue" size="large" />
+      </View>
+    );
   }
 
   return (
@@ -51,8 +66,13 @@ export default function App() {
       <Stack.Navigator>
         {user ? (
           <>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Create" component={Create} />
+            <Stack.Screen name="Home">
+              {(props) => <Home {...props} user={user} />}
+            </Stack.Screen>
+            <Stack.Screen name="Create" options={{ headerShown: false }}>
+              {(props) => <Create {...props} user={user} />}
+            </Stack.Screen>
+
             <Stack.Screen name="Edit" component={Edit} />
           </>
         ) : (

@@ -21,8 +21,10 @@ export default function SignUp({ navigation }) {
   const [username, setUsername] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const signUpAction = async () => {
+    setLoading(true);
     try {
       // 1. create a new user with email and password
       const result = await createUserWithEmailAndPassword(
@@ -38,6 +40,7 @@ export default function SignUp({ navigation }) {
         age: age,
         uid: result.user.uid,
       });
+      setLoading(false);
       showMessage({
         message: "Successful!",
         type: "success",
@@ -49,6 +52,7 @@ export default function SignUp({ navigation }) {
         message: "FirebaseError: Firebase: Error (auth/email-already-in-use).",
         type: "danger",
       });
+      setLoading(false);
     }
   };
 
@@ -58,6 +62,7 @@ export default function SignUp({ navigation }) {
         <Input
           placeholder="Email Address"
           onChangeText={(text) => setEmail(text)}
+          autoCapitalize={"none"} // for lowercase text
         />
         <Input
           placeholder="Password"
@@ -67,6 +72,7 @@ export default function SignUp({ navigation }) {
         <Input
           placeholder="Full name"
           onChangeText={(text) => setUsername(text)}
+          autoCapitalize={"words"}
         />
         <Input placeholder="Age" onChangeText={(text) => setAge(text)} />
         <View style={{ marginVertical: 20 }}>

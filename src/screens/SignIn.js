@@ -5,7 +5,10 @@ import {
   StyleSheet,
   TextInput,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { typography } from "../theme/typography";
@@ -14,6 +17,28 @@ import { colors } from "../theme/colors";
 import Button from "../components/Button";
 
 export default function SignIn({ navigation }) {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  const navigateToSignUp = () => {
+    navigation.navigate("SignUp");
+  };
+
+  const login = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log("Sign in successfully", user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Image
@@ -22,19 +47,32 @@ export default function SignIn({ navigation }) {
       />
       <Text style={styles.title}>Never forget your notes</Text>
       <View style={styles.textInputView}>
-        <TextInput style={styles.textInput} placeholder="Email" />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Email"
+          onChangeText={(text) => setEmail(text)}
+          autoCapitalize={"none"}
+        />
         <TextInput
           style={styles.textInput}
           placeholder="Password"
           secureTextEntry={true}
+          onChangeText={(text) => setPassword(text)}
         />
+
+        {error && <Text style={{ color: "red", marginTop: 10 }}>{error}</Text>}
       </View>
 
       <View style={styles.bottomTextView}>
-        <Button
-          title={"Login"}
-          customStyles={{ alignSelf: "center", marginBottom: 60 }}
-        />
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <Button
+            title={"Login"}
+            customStyles={{ alignSelf: "center", marginBottom: 60 }}
+            onPress={login}
+          />
+        )}
         <Pressable
           onPress={() => {
             navigation.navigate("SignUp");
