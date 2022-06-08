@@ -30,6 +30,7 @@ export default function SignUp({ navigation }) {
         email,
         password
       );
+      console.log("result", result);
       // 2. add user profile to database
       await addDoc(collection(db, "users"), {
         username: username,

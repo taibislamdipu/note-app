@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { useFonts } from "expo-font";
@@ -11,6 +12,8 @@ import Edit from "./src/screens/Edit";
 import SignIn from "./src/screens/SignIn";
 import SignUp from "./src/screens/SignUp";
 import FlashMessage from "react-native-flash-message";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./src/firebase";
 
 const AppTheme = {
   ...DefaultTheme,
@@ -20,10 +23,18 @@ const AppTheme = {
   },
 };
 
-export default function App() {
-  const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
-  const user = false;
+export default function App() {
+  const [user, setUser] = useState(false);
+
+  useEffect(() => {
+    const authSubscription = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+  }, []);
 
   const [loaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
