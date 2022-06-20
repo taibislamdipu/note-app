@@ -8,6 +8,8 @@ export default function Input({
   secureTextEntry,
   onChangeText,
   autoCapitalize,
+  multiline,
+  value,
 }) {
   return (
     <TextInput
@@ -16,13 +18,15 @@ export default function Input({
       secureTextEntry={secureTextEntry}
       onChangeText={onChangeText}
       autoCapitalize={autoCapitalize}
+      multiline={multiline}
+      value={value}
     />
   );
 }
 
 const styles = StyleSheet.create({
   textInput: {
-    height: 48,
+    // height: 48,
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGray,
     marginBottom: spacing[5],

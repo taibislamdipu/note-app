@@ -66,10 +66,10 @@ export default function App() {
       <Stack.Navigator>
         {user ? (
           <>
-            <Stack.Screen name="Home">
+            <Stack.Screen name="Home" options={{ headerShown: true }}>
               {(props) => <Home {...props} user={user} />}
             </Stack.Screen>
-            <Stack.Screen name="Create" options={{ headerShown: false }}>
+            <Stack.Screen name="Create" options={{ headerShown: true }}>
               {(props) => <Create {...props} user={user} />}
             </Stack.Screen>
 
