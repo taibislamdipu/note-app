@@ -26,7 +26,7 @@ export default function Create({ user, navigation }) {
   const onPressCreate = async () => {
     setLoading(true);
     try {
-      const docRef = await addDoc(collection(db, "notes"), {
+      await addDoc(collection(db, "notes"), {
         title: title,
         description: description,
         color: noteColor,

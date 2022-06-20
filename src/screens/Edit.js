@@ -19,7 +19,7 @@ const noteColorOptions = ["red", "blue", "green"];
 
 export default function Create({ user, navigation, route }) {
   const noteItem = route.params.item;
-  console.log("noteItem --->", noteItem);
+
   const [title, setTitle] = useState(noteItem.title);
   const [description, setDescription] = useState(noteItem.description);
   const [noteColor, setNoteColor] = useState(noteItem.color);
@@ -35,7 +35,7 @@ export default function Create({ user, navigation, route }) {
       });
       setLoading(false);
       showMessage({
-        message: "A new note has been created!",
+        message: "Updated!",
         type: "success",
       });
       navigation.goBack();

@@ -13,6 +13,7 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { typography } from "../theme/typography";
 import { spacing } from "../theme/spacing";
+import { showMessage } from "react-native-flash-message";
 import { colors } from "../theme/colors";
 import Button from "../components/Button";
 
@@ -31,7 +32,10 @@ export default function SignIn({ navigation }) {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log("Sign in successfully", user);
+        showMessage({
+          message: "Login successful",
+          type: "success",
+        });
       })
       .catch((error) => {
         const errorCode = error.code;

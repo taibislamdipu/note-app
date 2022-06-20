@@ -6,14 +6,15 @@ import {
   FlatList,
   Alert,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { AntDesign } from "@expo/vector-icons";
+import { showMessage } from "react-native-flash-message";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-
 import { db } from "../firebase";
 import {
   collection,
@@ -27,8 +28,9 @@ import Button from "../components/Button";
 
 export default function Home({ navigation, route, user }) {
   const [notes, setNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const showConfirmDialog = (item) => {
+  const deleteConfirmDialog = (item) => {
     return Alert.alert(
       "Are your sure?",
       "Are you sure you want to remove this?",
@@ -49,6 +51,34 @@ export default function Home({ navigation, route, user }) {
     );
   };
 
+  const logoutConfirmDialog = () => {
+    return Alert.alert("Are your sure?", "Are you sure you want to exit?", [
+      // The "Yes" button
+      {
+        text: "Yes",
+        onPress: () => {
+          {
+            signOut(auth)
+              .then(() => {
+                showMessage({
+                  message: "Logout successful",
+                  type: "success",
+                });
+              })
+              .catch((error) => {
+                console.log("error --->", error);
+              });
+          }
+        },
+      },
+      // The "No" button
+      // Does nothing but dismiss the dialog when tapped
+      {
+        text: "No",
+      },
+    ]);
+  };
+
   useEffect(() => {
     // create query
     const q = query(collection(db, "notes"), where("uid", "==", user.uid));
@@ -60,12 +90,11 @@ export default function Home({ navigation, route, user }) {
         list.push({ ...doc.data(), id: doc.id });
       });
       setNotes(list);
+      setIsLoading(false);
     });
 
     return notesListenerSubscription;
   }, []);
-
-  // console.log("notes", notes);
 
   const renderItem = ({ item }) => {
     const { title, description, color } = item;
@@ -88,7 +117,7 @@ export default function Home({ navigation, route, user }) {
             padding: 20,
             zIndex: 1,
           }}
-          onPress={() => showConfirmDialog(item)}
+          onPress={() => deleteConfirmDialog(item)}
         >
           <AntDesign name="delete" size={24} color="black" />
         </Pressable>
@@ -105,16 +134,6 @@ export default function Home({ navigation, route, user }) {
     navigation.navigate("Create");
   };
 
-  const logout = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("Sign-out successful.");
-      })
-      .catch((error) => {
-        console.log("error --->", error);
-      });
-  };
-
   return (
     <SafeAreaView
       style={{
@@ -122,7 +141,6 @@ export default function Home({ navigation, route, user }) {
       }}
     >
       <ScrollView>
-        {/* <View style={styles.title}> */}
         <View style={styles.title}>
           <Text>My Notes</Text>
 
@@ -131,22 +149,30 @@ export default function Home({ navigation, route, user }) {
           </Pressable>
         </View>
 
-        <View
-          style={{
-            padding: 20,
-          }}
-        >
-          <FlatList
-            data={notes}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
-        <View style={{ marginHorizontal: 20 }}>
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <View
+            style={{
+              padding: 20,
+            }}
+          >
+            <FlatList
+              data={notes}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+        )}
+        <View>
           <Button
             title={"Logout"}
-            customStyles={{ alignSelf: "center", marginBottom: 60 }}
-            onPress={logout}
+            customStyles={{
+              alignSelf: "center",
+              marginBottom: 60,
+              marginTop: 20,
+            }}
+            onPress={logoutConfirmDialog}
           />
         </View>
       </ScrollView>
