@@ -1,20 +1,20 @@
 import {
   View,
   Text,
-  Button,
   StyleSheet,
   Pressable,
   FlatList,
+  Alert,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { AntDesign } from "@expo/vector-icons";
-// import { signOut } from "firebase/auth";
-// import { auth } from "../firebase";
-
 import { signOut } from "firebase/auth";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
+
+import { db } from "../firebase";
 import {
   collection,
   deleteDoc,
@@ -23,9 +23,31 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import Button from "../components/Button";
 
 export default function Home({ navigation, route, user }) {
   const [notes, setNotes] = useState([]);
+
+  const showConfirmDialog = (item) => {
+    return Alert.alert(
+      "Are your sure?",
+      "Are you sure you want to remove this?",
+      [
+        // The "Yes" button
+        {
+          text: "Yes",
+          onPress: () => {
+            deleteDoc(doc(db, "notes", item.id));
+          },
+        },
+        // The "No" button
+        // Does nothing but dismiss the dialog when tapped
+        {
+          text: "No",
+        },
+      ]
+    );
+  };
 
   useEffect(() => {
     // create query
@@ -66,9 +88,7 @@ export default function Home({ navigation, route, user }) {
             padding: 20,
             zIndex: 1,
           }}
-          onPress={() => {
-            deleteDoc(doc(db, "notes", item.id));
-          }}
+          onPress={() => showConfirmDialog(item)}
         >
           <AntDesign name="delete" size={24} color="black" />
         </Pressable>
@@ -91,28 +111,45 @@ export default function Home({ navigation, route, user }) {
         console.log("Sign-out successful.");
       })
       .catch((error) => {
-        // An error happened.
+        console.log("error --->", error);
       });
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: colors.white, height: "100%" }}>
-      {/* <View style={styles.title}> */}
-      <View style={styles.title}>
-        <Text>My Notes</Text>
+    <SafeAreaView
+      style={{
+        backgroundColor: colors.white,
+      }}
+    >
+      <ScrollView>
+        {/* <View style={styles.title}> */}
+        <View style={styles.title}>
+          <Text>My Notes</Text>
 
-        <Pressable onPress={onPressCreate}>
-          <AntDesign name="pluscircleo" size={24} color="black" />
-        </Pressable>
-      </View>
+          <Pressable onPress={onPressCreate}>
+            <AntDesign name="pluscircleo" size={24} color="black" />
+          </Pressable>
+        </View>
 
-      <View style={{ padding: 20 }}>
-        <FlatList
-          data={notes}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </View>
+        <View
+          style={{
+            padding: 20,
+          }}
+        >
+          <FlatList
+            data={notes}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        </View>
+        <View style={{ marginHorizontal: 20 }}>
+          <Button
+            title={"Logout"}
+            customStyles={{ alignSelf: "center", marginBottom: 60 }}
+            onPress={logout}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
